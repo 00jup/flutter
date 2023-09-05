@@ -41,6 +41,9 @@ class _MyAppState extends State<MyApp> {
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "home"),
           BottomNavigationBarItem(icon: Icon(Icons.shopping_bag_outlined), label: "shopping"),
         ],
+        // 1. state에 현재 UI의 상태 저장
+        // 2. state에 따라 UI 어떻게 보일지 작성
+        // 3. state를 변경하고 싶을 때 setState() 호출 -> 유저도 state를 변경할 수 있도록
       ),
     );
   }
