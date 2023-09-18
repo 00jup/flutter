@@ -12,7 +12,7 @@ void main() {
           color: Colors.white,
           actionsIconTheme: IconThemeData(color: Colors.black, size: 50)),
       textTheme: TextTheme(
-        bodyText2: TextStyle(color: Colors.red),
+        bodyText2: TextStyle(color: Colors.black),
       ),
     ),
     home: const MyApp(),
@@ -30,13 +30,14 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var tab = 0;
+  var data;
   final PageController _controller = PageController(); // [1]
 
   getData() async {
     var result = await http
         .get(Uri.parse('https://codingapple1.github.io/app/data.json'));
-    var data = json.decode(result.body);
-    print(data[0]);
+    data = json.decode(result.body);
+    print(data);
   }
 
   @override //MyApp 위젯이 로드될 때 실행되는 함수
@@ -65,7 +66,7 @@ class _MyAppState extends State<MyApp> {
           });
         },
         children: [
-          FirstView(),
+          FirstView(sendedData: data),
           Container(
             color: Colors.blue,
           ),
@@ -94,7 +95,8 @@ class _MyAppState extends State<MyApp> {
 }
 
 class FirstView extends StatefulWidget {
-  const FirstView({super.key});
+  const FirstView({super.key, this.sendedData});
+  final sendedData;
 
   @override
   State<FirstView> createState() => _FirstViewState();
@@ -113,23 +115,29 @@ class _FirstViewState extends State<FirstView> {
     return ListView.builder(
         physics: ClampingScrollPhysics(),
         controller: _scrollController,
-        itemCount: 10,
+        itemCount: widget.sendedData?.length ?? 0,
         itemBuilder: (context, i) {
           return Column(
             children: [
-              Image(image: AssetImage("assets/latte.png")),
+              Image.network(widget.sendedData[i]['image']),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.thumb_up),
-                      onPressed: () {},
-                    )
-                  ],
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.thumb_up),
+                        onPressed: () {},
+                      ),
+                      Text(widget.sendedData[i]['likes'].toString() ?? '0'),
+                      Text(
+                          widget.sendedData[i]['content'] ?? 'Default Content'),
+                    ],
+                  ),
                 ),
-              )
+              ),
             ],
           );
         });
