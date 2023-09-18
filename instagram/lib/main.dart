@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+// import 'package:dio/dio.dart' as dio;
 import 'dart:convert';
 
 void main() {
@@ -33,9 +34,14 @@ class _MyAppState extends State<MyApp> {
   var data;
   final PageController _controller = PageController(); // [1]
 
-  getData() async {
+  Future getData() async {
     var result = await http
         .get(Uri.parse('https://codingapple1.github.io/app/data.json'));
+    if (result.statusCode == 200) {
+      print('success');
+    } else {
+      throw Exception('Failed to load data');
+    }
     data = json.decode(result.body);
     print(data);
   }
@@ -112,34 +118,40 @@ class _FirstViewState extends State<FirstView> {
   ScrollController _scrollController = ScrollController();
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        physics: ClampingScrollPhysics(),
-        controller: _scrollController,
-        itemCount: widget.sendedData?.length ?? 0,
-        itemBuilder: (context, i) {
-          return Column(
-            children: [
-              Image.network(widget.sendedData[i]['image']),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.thumb_up),
-                        onPressed: () {},
-                      ),
-                      Text(widget.sendedData[i]['likes'].toString() ?? '0'),
-                      Text(
-                          widget.sendedData[i]['content'] ?? 'Default Content'),
-                    ],
+    if (widget.sendedData != null) {
+      return ListView.builder(
+          physics: ClampingScrollPhysics(),
+          controller: _scrollController,
+          itemCount: widget.sendedData?.length ?? 0,
+          itemBuilder: (context, i) {
+            return Column(
+              children: [
+                Image.network(widget.sendedData[i]['image']),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.thumb_up),
+                          onPressed: () {},
+                        ),
+                        Text(widget.sendedData[i]['likes'].toString() ?? '0'),
+                        Text(widget.sendedData[i]['content'] ??
+                            'Default Content'),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
-          );
-        });
+              ],
+            );
+          });
+    } else {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
   }
 }
