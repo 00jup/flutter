@@ -32,6 +32,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var tab = 0;
   var data;
+  var sendedData = [];
   final PageController _controller = PageController(); // [1]
 
   Future getData() async {
@@ -43,7 +44,9 @@ class _MyAppState extends State<MyApp> {
       throw Exception('Failed to load data');
     }
     data = json.decode(result.body);
-    print(data);
+    setState(() {
+      sendedData = data;
+    });
   }
 
   @override //MyApp 위젯이 로드될 때 실행되는 함수
@@ -72,7 +75,7 @@ class _MyAppState extends State<MyApp> {
           });
         },
         children: [
-          FirstView(sendedData: data),
+          FirstView(sendedData: sendedData),
           Container(
             color: Colors.blue,
           ),
