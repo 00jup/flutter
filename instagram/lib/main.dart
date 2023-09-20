@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http; //웹에서 정보 받아오기
 // import 'package:dio/dio.dart' as dio;
 import 'dart:convert';
+import 'package:flutter/rendering.dart'; //스크롤 높이 측정
 
 void main() {
   runApp(MaterialApp(
@@ -44,6 +45,7 @@ class _MyAppState extends State<MyApp> {
       throw Exception('Failed to load data');
     }
     data = json.decode(result.body);
+    print(data);
     setState(() {
       sendedData = data;
     });
@@ -119,6 +121,59 @@ class FirstView extends StatefulWidget {
 
 class _FirstViewState extends State<FirstView> {
   ScrollController _scrollController = ScrollController();
+
+  var flag;
+
+  Future getData() async {
+    print("start\n");
+    flag = "요청끝";
+    print(flag);
+
+    if (flag == "요청끝") {
+      flag = "요청중";
+      var url1 = 'https://codingapple1.github.io/app/more1.json';
+      var url2 = 'https://codingapple1.github.io/app/more2.json';
+
+      List<Future<http.Response>> requests = [
+      http.get(Uri.parse(url1)),
+      http.get(Uri.parse(url2)),
+    ];
+
+    List<http.Response> responses = await Future.wait(requests);
+
+    for (var response in responses) {
+      if (response.statusCode == 200) {
+        print('success');
+        var newData = json.decode(response.body);
+        setState(() {
+          widget.sendedData.add(newData);
+        });
+      } else {
+        throw Exception('Failed to load data from ${response.request!.url}');
+      }
+    }
+
+    }
+    flag == "요청끝";
+    print("end");
+    print(flag);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() async {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        getData();
+      }
+    }); //사용 다 끝나면 제거하는 것도 있음 찾아보기 ******************
+    //스크롤 방향도 검사 가능하다 -> userScrollDirection
+    //maxScrollExtent -> 스크롤바 최대 내릴 수 있는 높이
+  }
+
+  //유저가 밑으로 스크롤하면 하단바 숨기기
+
   @override
   Widget build(BuildContext context) {
     if (widget.sendedData != null) {
@@ -141,7 +196,8 @@ class _FirstViewState extends State<FirstView> {
                           icon: Icon(Icons.thumb_up),
                           onPressed: () {},
                         ),
-                        Text(widget.sendedData[i]['likes'].toString() ?? '0'),
+                        Text(
+                            "좋아요 ${widget.sendedData[i]['likes'].toString() ?? '0'}"),
                         Text(widget.sendedData[i]['content'] ??
                             'Default Content'),
                       ],
