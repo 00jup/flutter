@@ -3,6 +3,8 @@ import 'package:http/http.dart' as http; //웹에서 정보 받아오기
 // import 'package:dio/dio.dart' as dio;
 import 'dart:convert';
 import 'package:flutter/rendering.dart'; //스크롤 높이 측정
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 void main() {
   runApp(MaterialApp(
@@ -33,6 +35,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   var tab = 0;
   var data;
+  var userImage;
   var sendedData = [];
   final PageController _controller = PageController(); // [1]
 
@@ -66,7 +69,28 @@ class _MyAppState extends State<MyApp> {
           style: a,
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.add_box_outlined))
+          IconButton(
+              onPressed: () async {
+                var picker = ImagePicker();
+                var image = await picker.pickImage(
+                    source: ImageSource
+                        .gallery); //pickVideo //ImageSource.video //pickMultiImage도 가능함 //ImageSource.camera
+                if (image != null) {
+                  setState(() {
+                    userImage = File(image.path);
+                  });
+                  Image.file(userImage);
+                }
+
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => Upload(
+                            userImage:
+                                userImage) //하나 밖에 없을 때 arrowFunction 사용하기
+                        ));
+              },
+              icon: Icon(Icons.add_box_outlined))
         ],
       ),
       body: PageView(
@@ -135,24 +159,23 @@ class _FirstViewState extends State<FirstView> {
       var url2 = 'https://codingapple1.github.io/app/more2.json';
 
       List<Future<http.Response>> requests = [
-      http.get(Uri.parse(url1)),
-      http.get(Uri.parse(url2)),
-    ];
+        http.get(Uri.parse(url1)),
+        http.get(Uri.parse(url2)),
+      ];
 
-    List<http.Response> responses = await Future.wait(requests);
+      List<http.Response> responses = await Future.wait(requests);
 
-    for (var response in responses) {
-      if (response.statusCode == 200) {
-        print('success');
-        var newData = json.decode(response.body);
-        setState(() {
-          widget.sendedData.add(newData);
-        });
-      } else {
-        throw Exception('Failed to load data from ${response.request!.url}');
+      for (var response in responses) {
+        if (response.statusCode == 200) {
+          print('success');
+          var newData = json.decode(response.body);
+          setState(() {
+            widget.sendedData.add(newData);
+          });
+        } else {
+          throw Exception('Failed to load data from ${response.request!.url}');
+        }
       }
-    }
-
     }
     flag == "요청끝";
     print("end");
@@ -176,7 +199,11 @@ class _FirstViewState extends State<FirstView> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.sendedData != null) {
+    if (widget.sendedData == null) {
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
       return ListView.builder(
           physics: ClampingScrollPhysics(),
           controller: _scrollController,
@@ -207,10 +234,29 @@ class _FirstViewState extends State<FirstView> {
               ],
             );
           });
-    } else {
-      return Center(
-        child: CircularProgressIndicator(),
-      );
     }
+  }
+}
+
+class Upload extends StatelessWidget {
+  const Upload({super.key, this.userImage});
+  final userImage;
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.file(userImage),
+            Text('이미지업로드화면'),
+            TextField(),
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: Icon(Icons.close)),
+          ],
+        ));
   }
 }
