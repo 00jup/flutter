@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/rendering.dart'; //스크롤 높이 측정
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'shop.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -86,8 +87,9 @@ class _MyAppState extends State<MyApp> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => Upload(
-                            userImage:
-                                userImage) //하나 밖에 없을 때 arrowFunction 사용하기
+                            userImage: userImage,
+                            sendedData:
+                                sendedData) //하나 밖에 없을 때 arrowFunction 사용하기
                         ));
               },
               icon: Icon(Icons.add_box_outlined))
@@ -101,10 +103,8 @@ class _MyAppState extends State<MyApp> {
           });
         },
         children: [
-          FirstView(sendedData: sendedData),
-          Container(
-            color: Colors.blue,
-          ),
+          FirstView(userImage: userImage, sendedData: sendedData),
+          Shop(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -130,8 +130,9 @@ class _MyAppState extends State<MyApp> {
 }
 
 class FirstView extends StatefulWidget {
-  const FirstView({super.key, this.sendedData});
+  const FirstView({super.key, this.sendedData, this.userImage});
   final sendedData;
+  final userImage;
 
   @override
   State<FirstView> createState() => _FirstViewState();
@@ -211,7 +212,9 @@ class _FirstViewState extends State<FirstView> {
           itemBuilder: (context, i) {
             return Column(
               children: [
-                Image.network(widget.sendedData[i]['image']),
+                (widget.sendedData[i]['image'].runtimeType == String)
+                    ? Image.network(widget.sendedData[i]['image'])
+                    : Image.file(widget.sendedData[i]['image']),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
@@ -238,19 +241,50 @@ class _FirstViewState extends State<FirstView> {
   }
 }
 
-class Upload extends StatelessWidget {
-  const Upload({super.key, this.userImage});
+var inputdata1;
+var inputdata2;
+
+class Upload extends StatefulWidget {
+  const Upload({super.key, this.userImage, this.sendedData});
   final userImage;
+  final sendedData;
+
+  @override
+  State<Upload> createState() => _UploadState();
+}
+
+class _UploadState extends State<Upload> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          actions: [
+            IconButton(
+                onPressed: () {
+                  widget.sendedData.add({
+                    'image': widget.userImage,
+                    'content': inputdata1,
+                    'likes': inputdata2
+                  });
+                },
+                icon: Icon(Icons.send))
+          ],
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.file(userImage),
+            Image.file(widget.userImage),
             Text('이미지업로드화면'),
-            TextField(),
+            TextField(
+              onChanged: (value) {
+                inputdata1 = value;
+              },
+              decoration: InputDecoration(hintText: "내용입력"),
+            ),
+            TextField(
+              onChanged: (value) => inputdata2 = value,
+              decoration: InputDecoration(hintText: "좋아요 입력"),
+            ),
             IconButton(
                 onPressed: () {
                   Navigator.pop(context);
