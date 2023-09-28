@@ -12,7 +12,7 @@ void main() {
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       bottomAppBarTheme: BottomAppBarTheme(color: Colors.black),
-      iconTheme: IconThemeData(color: Colors.black),
+      iconTheme: IconThemeData(color: Colors.blue),
       appBarTheme: AppBarTheme(
           color: Colors.white,
           actionsIconTheme: IconThemeData(color: Colors.black, size: 50)),
