@@ -11,25 +11,49 @@ import 'profile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
+import 'package:provider/provider.dart';
+
+class Store1 extends ChangeNotifier {
+  var name = 'john kim';
+  int followers = 0;
+  var flag = false;
+
+  /// 클래스 안 변수는 밖에서 수정한다면 위험하다고 여겨짐. 그래서 이렇게 코딩함.
+  changeFollowers() {
+    if (flag == false) {
+      followers++;
+      flag = true;
+      notifyListeners();
+    } else {
+      followers--;
+      flag = false;
+      notifyListeners();
+    }
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(
-      bottomAppBarTheme: BottomAppBarTheme(color: Colors.black),
-      iconTheme: IconThemeData(color: Colors.blue),
-      appBarTheme: AppBarTheme(
-          color: Colors.white,
-          actionsIconTheme: IconThemeData(color: Colors.black, size: 50)),
-      textTheme: TextTheme(
-        bodyText2: TextStyle(color: Colors.black),
+  runApp(ChangeNotifierProvider(
+    create: (c) => Store1(),
+    child: MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        bottomAppBarTheme: BottomAppBarTheme(color: Colors.black),
+        iconTheme: IconThemeData(color: Colors.blue),
+        appBarTheme: AppBarTheme(
+            color: Colors.white,
+            actionsIconTheme: IconThemeData(color: Colors.black, size: 50)),
+        textTheme: TextTheme(
+          bodyText2: TextStyle(color: Colors.black),
+        ),
       ),
+      home: const MyApp(),
     ),
-    home: const MyApp(),
   ));
 }
 
@@ -241,8 +265,13 @@ class _FirstViewState extends State<FirstView> {
                           onTap: () {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => Profile()));
+                                PageRouteBuilder(
+                                  pageBuilder: (c, a1, a2) => Profile(),
+                                  transitionsBuilder: (c, a1, a2, child) =>
+                                      FadeTransition(opacity: a1, child: child),
+                                  transitionDuration:
+                                      Duration(milliseconds: 300),
+                                ));
                           },
                         ),
                         Text(
