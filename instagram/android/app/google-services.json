@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "389404943176",
+    "project_id": "fluttergram-c1140",
+    "storage_bucket": "fluttergram-c1140.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389404943176:android:c8f552e276ab82ae0c497d",
+        "android_client_info": {
+          "package_name": "com.directions.instagram"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI1FSlqk8j2gtz1eEtZ7NIA1CeQ_ZH2ys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:389404943176:android:6f39a4731649ea160c497d",
+        "android_client_info": {
+          "package_name": "com.directions.istagram.instagram"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBI1FSlqk8j2gtz1eEtZ7NIA1CeQ_ZH2ys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

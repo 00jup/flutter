@@ -6,8 +6,17 @@ import 'package:flutter/rendering.dart'; //스크롤 높이 측정
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'shop.dart';
+import 'profile.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
@@ -225,6 +234,16 @@ class _FirstViewState extends State<FirstView> {
                         IconButton(
                           icon: Icon(Icons.thumb_up),
                           onPressed: () {},
+                        ),
+                        GestureDetector(
+                          child: Text(
+                              widget.sendedData[i]['user'] ?? 'Default User'),
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Profile()));
+                          },
                         ),
                         Text(
                             "좋아요 ${widget.sendedData[i]['likes'].toString() ?? '0'}"),
